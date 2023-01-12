@@ -1,0 +1,33 @@
+{% load static  %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title> task{% block title %} {% endblock title %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href=" {% static 'css/all.css' %}">
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href=" {% static 'css/bootstrap.css' %}">
+  <!-- lightbox -->
+  <link rel="stylesheet" href=" {% static 'css/lightbox.min.css' %}">
+  <!-- Custom -->
+  <link rel="stylesheet" href=" {% static 'css/style.css' %}">
+
+<body>
+
+    <!-- Top Bar -->
+{% include 'partials/_topbar.html' %}
+    <!--navbar-->
+{% include 'partials/_navbar.html' %}
+ 
+{% block content  %} {% endblock %}
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js">
+  </script>
+  <script src=" {% static 'js/jquery-3.3.1.min.js'%}"></script>
+  <script src=" {% static 'js/bootstrap.bundle.min.js'%}"></script>
+  <script src=" {% static 'js/lightbox.min.js'%}"></script>
+  <script src=" {% static 'js/main.js'%}"></script>
+</body>
+</html>

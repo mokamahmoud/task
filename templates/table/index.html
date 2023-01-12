@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block title %}
+ | task
+{% endblock title %}
+{% block content %}
+<div class="container">
+
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+          <div class="x_title">
+              <h4 class="float-right"> توقيتات العمل للطبيب / {{doctor.name}} -  عيادة / {{doctor.department.name}}
+              </h4> 
+               <h4 class="float-left">
+                  <button type="submit" class="btn btn-warning"  id='edit' onclick="disfunction()">  تعديل التوقيتات </button>
+                  <button type="submit" class="btn btn-success"  id='save' onclick='savefunction()' style="display:none;" >  حفظ  التوقيتات</button>
+              </h4>
+              <div class="clearfix"></div>
+          </div>
+          <div class="x_content" >
+              <div class="row">
+                  <table id="days-slots-table" class="table table-striped table-bordered"
+                    style="text-align-last: center;border-radius:0px">
+                    <thead>
+                      <tr>
+                          <th>#</th>
+                        <th>اليوم</th>
+                        <!-- <th>الحالة</th> -->
+                        {% for hS in hourSlots %}
+                        <th>{{hS.name}}</th>
+                        {% endfor %}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for obj in doctor_data_days %}
+                      <tr id="">
+                          <td name="count" data-is-working="{% if obj.day.is_working %}true{% else %}false{% endif %}">
+                            <p class="counter" style="display: block;">{{forloop.counter}}</p>
+                            <input type="checkbox" name='check' value="{{obj.day.name}}" class="form-control day" style="display: none;" data-day-id="{{obj.day.id}}" 
+                            {% if obj.day.is_working %}checked{% else %}false{% endif %} />
+                          </td>
+                        <td name="name">{{obj.day.name}}</td>
+                        <!-- <td name="is_working">
+                          <i class="{% if obj.day.is_working %}far fa-check-circle is_active_t{% else %}far fa-times-circle is_active_f{% endif %}"></i>``
+                        </td> -->
+                        {% for s in obj.slots %}
+                        <td name=""  data-is-working="{% if s.is_working %}true{% else %}false{% endif %}" style="{% if s.is_working %}background: #97ea97;{% endif %};height: calc(2.25rem + 2px);">
+                          <input  type="checkbox"  name='check' class="form-control slot" style="display: none;" data-slot-id="{{s.id}}" 
+                          data-day-id="{{obj.day.id}}" value="{{s.id}}" {% if s.is_working %}checked{% else %}false{% endif %} />
+                        </td>
+                        {% endfor %}
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script>
+  function disfunction() {
+    var button = document.getElementById("edit");
+    var ele=document.getElementsByName('check');
+    for(var i=0; i<ele.length; i++){ 
+      ele[i].style.display = "block";
+    }
+    $("input[data-day-id][data-slot-id]").prop('disabled', true);
+    var days = $(".day:checked");      
+    for(var i=0;i<days.length;i++)
+    {
+        id= $(days[i]).attr('data-day-id');
+        $("input[data-day-id="+ id +"][data-slot-id]").prop('disabled', false);
+    }
+    var savebutton=document.getElementById('save');
+    savebutton.style.display = "block";
+
+
+$(".day").click(function(e) {
+  var clickedInput =e.target;
+  var res =$(clickedInput).attr('data-day-id');
+  if(clickedInput.checked){
+    $("input[data-day-id="+ res +"][data-slot-id]").prop('disabled', false);
+  }else{
+    $("input[data-day-id="+ res +"][data-slot-id]").prop('disabled', true);
+    $("input[data-day-id="+ res +"][data-slot-id]").prop('checked', false);
+  }
+});
+
+
+
+  }
+
+
+  function savefunction() {
+  var checked = []
+  $("input[name='check']:checked").each(function ()
+  {
+    checked.push($(this).val()); 
+  });
+  $.ajax({
+  url: "addslots",
+  type: "POST",
+  dataType: "json",
+  data: JSON.stringify({checked: checked,}),
+  headers: {
+    "X-Requested-With": "XMLHttpRequest",
+    "X-CSRFToken": getCookie("csrftoken"),  
+
+  },
+  success: (data) => {
+    location.reload();
+    console.log(data);
+  },
+  error: (error) => {
+    console.log(error);
+  }
+});
+}
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+</script>
+
+{% endblock content %}
